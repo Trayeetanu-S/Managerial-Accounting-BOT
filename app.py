@@ -47,8 +47,9 @@ if page == "Cost Sheet":
         profit = sales_value - total_cost
         profit_per_unit = profit / units_produced if units_produced else 0
 
-        # Cost per unit
-        per_unit = lambda x: x / units_produced if units_produced else 0
+        # Cost per unit helper
+        def per_unit(x):
+            return x / units_produced if units_produced else 0
 
         # Display cost sheet table
         data = {
@@ -90,7 +91,11 @@ if page == "Cost Sheet":
             ]
         }
         df = pd.DataFrame(data)
-        st.dataframe(df.style.format("{:,.2f}"), use_container_width=True)
+        # Format only the numeric columns, leave "Particulars" as text
+        st.dataframe(
+            df.style.format("{:,.2f}", subset=["Total (₹)", "Per Unit (₹)"]),
+            use_container_width=True
+        )
 
         # Waterfall chart: cost buildup to sales
         fig_waterfall = go.Figure(go.Waterfall(
@@ -128,7 +133,6 @@ if page == "Cost Sheet":
         - Per‑unit cost: **₹{per_unit(total_cost):,.2f}**, leaving a per‑unit profit of **₹{profit_per_unit:,.2f}**.  
         - The waterfall chart shows how each cost layer eats into the final selling price.
         """)
-
 # ========== CVP ANALYSIS ==========
 elif page == "CVP Analysis":
     st.header("Cost‑Volume‑Profit (CVP) Analysis")
